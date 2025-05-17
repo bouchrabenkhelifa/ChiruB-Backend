@@ -9,4 +9,3 @@ export class DecaptorService {
     return temp;
   }
 }
-
