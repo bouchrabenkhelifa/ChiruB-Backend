@@ -28,12 +28,12 @@ import { SystemeTraitementService as JoystickSystemeTraitementService } from './
   controllers: [
     AppController,
     CapteurController,
-    JoystickController, 
+    JoystickController,
   ],
   providers: [
     AppService,
     CapteurSystemeTraitementService,
-    JoystickSystemeTraitementService, 
+    JoystickSystemeTraitementService,
     DecaptorService,
     DisactionerService,
   ],

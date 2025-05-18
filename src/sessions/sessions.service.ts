@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { createClient, SupabaseClient } from '@supabase/supabase-js';
 import { ConfigService } from '@nestjs/config';
-
+import { CreateSessionDto } from './create-session.dto';
 @Injectable()
 export class SessionsService {
   private supabase: SupabaseClient;
@@ -12,7 +12,18 @@ export class SessionsService {
       this.configService.get<string>('SUPABASE_KEY')!
     );
   }
+async getHospitals() {
+  const { data, error } = await this.supabase
+    .from('hopital')    
+    .select('*');
 
+  if (error) {
+    console.error('Erreur Supabase  :', error);
+    return null;
+  }
+
+  return data;
+}
 async getSessions() {
   const { data, error } = await this.supabase
     .from('session')
@@ -60,7 +71,21 @@ async getSessions() {
 
   return transformedData;
 }
+async create(dto: CreateSessionDto) {
+  console.log('Reçu depuis Postman :', dto); 
 
+  const { data, error } = await this.supabase
+    .from('session')
+    .insert([dto])
+    .select(); 
+
+  if (error) {
+    console.error('Erreur lors de la création de la session :', error); 
+    throw new Error(error.message); 
+  }
+
+  return data[0]; 
+}
 
 
 }
