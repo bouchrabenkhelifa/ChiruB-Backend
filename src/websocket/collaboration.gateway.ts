@@ -14,7 +14,7 @@ import { WsJwtGuard } from 'src/auth/guards/jwt-ws-auth.guard';
 
 @WebSocketGateway({
   cors: {
-    origin: 'http://localhost:3000',
+    origin: 'http://localhost:3001',
     credentials: true,
   },
 })
