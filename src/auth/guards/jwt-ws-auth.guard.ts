@@ -1,36 +1,31 @@
-import { CanActivate, ExecutionContext, Injectable } from '@nestjs/common';
+import { CanActivate, Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { WsException } from '@nestjs/websockets';
+import { Socket } from 'socket.io';
 
 @Injectable()
-export class JwtWsAuthGuard implements CanActivate {
-  constructor(private readonly jwtService: JwtService) {}
+export class WsJwtGuard implements CanActivate {
+  constructor(private jwtService: JwtService) {}
 
-  canActivate(context: ExecutionContext): boolean {
+  async canActivate(context: any): Promise<boolean> {
+    const client: Socket = context.switchToWs().getClient();
+    const token = this.extractTokenFromHeader(client);
+    
+    if (!token) {
+      throw new WsException('Unauthorized');
+    }
+    
     try {
-      const client = context.switchToWs().getClient();
-      const token = this.extractTokenFromHeader(client.handshake);
-      
-      if (!token) {
-        throw new WsException('Invalid token');
-      }
-      
       const payload = this.jwtService.verify(token);
-      
-      // Attach user to socket
-      client.user = payload;
-      
+      client.data.user = payload;
       return true;
-    } catch (err) {
-      throw new WsException('Unauthorized access');
+    } catch {
+      throw new WsException('Invalid token');
     }
   }
 
-  private extractTokenFromHeader(handshake: any): string | undefined {
-    const authHeader = handshake.headers.authorization;
-    if (!authHeader) return undefined;
-    
-    const [type, token] = authHeader.split(' ');
+  private extractTokenFromHeader(client: Socket): string | undefined {
+    const [type, token] = client.handshake.headers.authorization?.split(' ') ?? [];
     return type === 'Bearer' ? token : undefined;
   }
 }
