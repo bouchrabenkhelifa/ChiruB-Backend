@@ -9,10 +9,11 @@ export class DisactionerService {
     return `Action "${command}" executed successfully.`;
   }
 
-    moveHardware(direction: string, angle: number, distance: number): any {
-    // Your hardware control logic here
+  moveHardware(direction: string, angle: number, distance: number): any {
+    console.log(`[DisactionerService]  Moving ${direction} at angle ${angle} and distance ${distance}`);
     return `Moving ${direction} at angle ${angle} and distance ${distance}`;
   }
+
 }
 
 
